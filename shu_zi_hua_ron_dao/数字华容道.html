@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>数字华容道</title>
+		<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
+		<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="./style.css">
+		<style>
+			
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row"></div>
+			<div class="row">
+				<div class="col-sm-12 col-md-4 offset-md-4 bg-success" style="text-align: -webkit-center;">
+					<div class="game-container" id="gameContainer">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script>
+			$(function(){
+				
+				//游戏格子大小
+				var GAME_SIZE=3;
+				var MAT;
+				//格子样式
+				var GRID_CLASS={
+					
+				}
+				//操作键	
+				var OPERATION_KEY={
+					"ArrowUp":"upward",
+					"ArrowDown":"down",
+					"ArrowLeft":"left",
+					"ArrowRight":"right"
+				}
+				$(document).keydown(function(event){
+					//if(GAME_STATE!=0)return;
+					var value=OPERATION_KEY[event.key];
+					if(value){
+						switch(value){
+							case "upward":
+								upward();
+								break;
+							case "down":
+								down();
+								break;
+							case "left":
+								left();
+								break;
+							case "right":
+								right();
+								break;
+							default :
+								console.log("未定义")
+								return;
+						}
+						
+						var state= gameState();
+					}
+				})
+				
+				//获取完整的矩阵
+				function getEmptyMatrix(){
+					var mat= new Array();
+					var i=1;
+					for(x=0;x<GAME_SIZE*GAME_SIZE;x++){
+						if(i==GAME_SIZE*GAME_SIZE){i=0;}
+						mat[x]=i; 
+						i++;
+					}
+					return mat;
+				}
+				
+				//刷新界面
+				function refreshShow (){
+					$("#gameContainer").empty();
+					for(var x = 0,lenx = MAT.length; x < lenx; x++){
+						var i =MAT[x];
+						if(i>0){
+							var cal=GRID_CLASS[i];
+							$("#gameContainer").append("<div class='cell "+cal+"' >"+i+"</div>");
+						}else{
+							$("#gameContainer").append("<div class='cell'></div>");
+						}
+					}
+					
+					var conWidth= $("#gameContainer").width()
+					var cellWidth=(conWidth/GAME_SIZE)-2;
+					$(".cell").width(cellWidth)
+					$(".cell").height(cellWidth)
+				}
+				
+				//打乱顺序
+				function chaotic(){
+					MAT.sort(randomsort);
+				}
+				function randomsort(a, b) {
+					return Math.random()>.5 ? -1 : 1;
+					//用Math.random()函数生成0~1之间的随机数与0.5比较，返回-1或1
+				}
+				
+				//全部按顺序排序时游戏胜利，否则继续
+				function gameState(){
+					for(var x = 0,lenx = MAT.length; x < lenx; x++){
+						if(x!=lenx-1 && MAT[x]>MAT[x+1]){
+							return 0; //游戏继续
+						} 
+					}
+					alert("游戏胜利");
+					return 1; //游戏胜利
+				}
+				
+				
+				//向上
+				function upward(){
+					for(var x = 0,lenx = MAT.length; x < lenx; x++){
+						var i =MAT[x];
+						if(i == 0){//找到空白格
+							var m=x+GAME_SIZE;
+							if(m>lenx){
+								return ;
+							}
+							MAT[x]=MAT[m];
+							MAT[m]=0;
+							break;
+						}
+					}
+					console.log(MAT);
+					refreshShow();
+				}
+				
+				//向下
+				function down(){
+					for(var x = 0,lenx = MAT.length; x < lenx; x++){
+						var i =MAT[x];
+						if(i == 0){//找到空白格
+							var m=x-GAME_SIZE;
+							if(m<0){
+								return ;
+							}
+							MAT[x]=MAT[m];
+							MAT[m]=0;
+							break;
+						}
+					}
+					console.log(MAT);
+					refreshShow();
+				}
+				
+				//向右
+				function right(){
+					for(var x = 0,lenx = MAT.length; x < lenx; x++){
+						var i =MAT[x];
+						if(i == 0){//找到空白格
+							var m=x-1;
+							if(x%GAME_SIZE==0 || m<0 ){
+								return ;
+							}
+							MAT[x]=MAT[m];
+							MAT[m]=0;
+							break;
+						}
+					}
+					console.log(MAT);
+					refreshShow();
+				
+				}
+				
+				//向左
+				function left(){
+					for(var x = 0,lenx = MAT.length; x < lenx; x++){
+						var i =MAT[x];
+						if(i == 0){//找到空白格
+							var m=x+1;
+							if((x+1)%GAME_SIZE==0 || m>lenx ){
+								return ;
+							}
+							MAT[x]=MAT[m];
+							MAT[m]=0;
+							break;
+						}
+					}
+					console.log(MAT);
+					refreshShow();
+				}
+				
+				
+				startGame();
+				function startGame(){
+					MAT = getEmptyMatrix();
+					
+					chaotic();
+					refreshShow();
+					
+				}
+				
+			
+			})
+		</script>
+	
+	</body>
+
+</html>
